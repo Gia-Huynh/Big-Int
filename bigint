@@ -66,7 +66,7 @@ void allocation(bigint& x,string s)
     x.data = new BYTE[x.nbytes];
 }
 
-void stringtobigint(bigint& x, string &s)
+void stringtobigint(bigint& x, string s)
 {
     int carry = 0;
     string res = "";
@@ -172,11 +172,47 @@ string BigintToString(bigint x)
     return str;
 }
 
+int BinaryToInt(string s)
+{
+    int res = 0;
+    int n = s.length();
+    int carry = 1;
+    for (int i = n-1; i >= 0; i--)
+    {
+        res = res + (s[i] - '0') * carry ;
+        carry = carry * 2;
+    }
+    return res;
+}
+
+void BinaryToBigint(bigint &x,string s)
+{
+    int n = s.length();
+    int k = (8 - n % 8) % 8;
+    reverse(s.begin(), s.end());
+    for (int i = 0; i < k; i++)
+    {
+        s += "0";
+    }
+    reverse(s.begin(), s.end());
+    int cnt = (n + k) / 8;
+    x.nbytes = cnt;
+    x.data = new BYTE[x.nbytes];
+    for (int j=0;j<cnt;j++)
+    {
+        string str = "";
+        for (int i = 8*j;i<8*(j+1);i++)
+        {
+            str += s[i];
+        }
+        x.data[cnt-1-j] = BinaryToInt(str);
+    }
+}
+
 int main()
 {
-    string t = "8793278316383117319";
+    string t = "11010111111111111110011";
     bigint x;
-    stringtobigint(x, t);
-    cout << BigintToBinary(x);
+    BinaryToBigint(x, t);
     freedata(x);
 }
