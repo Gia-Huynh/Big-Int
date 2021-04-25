@@ -162,7 +162,7 @@ string BigintToString(bigint x)
 
 int main()
 {
-    string s = "256";
+    string s = "2565";
     string s1 = "0";
     bigint x;
     string t = s + s1;
