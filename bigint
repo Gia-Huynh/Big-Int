@@ -9,9 +9,9 @@ using namespace std;
 
 typedef struct Bigint
 {
-    BYTE sign; // 1 is negative ,0 is positive
-    int nbytes;
-    BYTE* data;
+    BYTE sign = 0; // 1 is negative ,0 is positive
+    int nbytes = 0;
+    BYTE* data = NULL;
 } bigint;
 
 void freedata(bigint x)
@@ -66,7 +66,7 @@ void allocation(bigint& x,string s)
     x.data = new BYTE[x.nbytes];
 }
 
-void stringtobigint(bigint& x, string s)
+void DecimalToBigint(bigint& x, string s)
 {
     int carry = 0;
     string res = "";
@@ -165,11 +165,123 @@ string operator+(string x,string y)
     return str;
 }
 
-string BigintToString(bigint x)         
+bigint operator+(bigint x, bigint y)
 {
-    string str = "";
-    
-    return str;
+    bigint res;
+    int nx = x.nbytes;
+    int ny = y.nbytes;
+    int n = (nx > ny) ? nx : ny;
+    int mem = 0;
+    res.data = new BYTE[n+1];
+    if (n - ny > 0)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            if (i < ny)
+            {
+                res.data[i] = x.data[i] + y.data[i] + mem;
+                if (int(x.data[i] + y.data[i]) > 255)
+                    mem = 1;
+                else
+                    mem = 0;
+            }
+            else
+            {
+                res.data[i] = x.data[i] + mem ;
+                if (int(x.data[i]) + mem  > 255)
+                    mem = 1;
+                else
+                    mem = 0;
+            }
+        }
+    }
+    else 
+        if (n - nx > 0)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            if (i < nx)
+            {
+                res.data[i] = x.data[i] + y.data[i] + mem;
+                if (int(x.data[i] + y.data[i] + mem ) > 255)
+                    mem = 1;
+                else
+                    mem = 0;
+            }
+            else
+            {
+                res.data[i] = y.data[i] + mem ;
+                if (int(y.data[i]+mem) + mem  > 255)
+                    mem = 1;
+                else
+                    mem = 0;
+            }
+        }
+    }
+    else
+    {
+        for (int i = 0; i < n; i++)
+        {
+            res.data[i] = x.data[i] + y.data[i] + mem;
+            if (x.data[i] + y.data[i] + mem > 255)
+                mem = 1;
+            else
+                mem = 0;
+        }
+        if (mem)
+        {
+            res.data[n] = mem;
+            n++;
+        }
+    }
+    res.nbytes = n;
+    return res;
+}
+
+bigint operator*(bigint x,bigint y)
+{
+    bigint res;
+    bigint tmp;
+    int nx = x.nbytes;
+    int ny = y.nbytes;
+    int n = nx + ny ;
+    res.data = new BYTE[n + 1];
+    tmp.data = new BYTE[n + 1];
+    res.nbytes = n;
+    tmp.nbytes = n;
+    int mem = 0;
+    for (int i = 0; i <= n; i++)
+    {
+        res.data[i] = 0;
+        tmp.data[i] = 0;
+    }
+    for (int i = 0; i < ny; i++)
+    {  
+        for (int j = 0; j < n; j++)
+        {
+            if (j < i)
+                tmp.data[j] = 0;
+            if (j >= i && j < nx + i)
+            {
+                tmp.data[j] = (x.data[j - i] * y.data[i] + mem);
+                if (x.data[j - i] * y.data[i] + mem > 255)
+                {
+                    mem = (x.data[j - i] * y.data[i] + mem) / 256;
+                }
+                else
+                    mem = 0;
+            }
+            else if (mem > 0 && j == nx + i)
+            {
+                tmp.data[j] = mem;
+                mem = 0;
+            }
+            else
+                tmp.data[j] = 0;
+        }
+        res = res + tmp;   
+    }
+    return res;
 }
 
 int BinaryToInt(string s)
@@ -209,10 +321,44 @@ void BinaryToBigint(bigint &x,string s)
     }
 }
 
+bool BigintNonZero(bigint x)
+{
+    int n = x.nbytes;
+    for (int i = 0; i < n; i++)
+    {
+        if (x.data[i] != 0)
+            return 1;
+    }
+    return 0;
+}
+
+
+
+string BigintToDecimal(bigint x)
+{
+    string str = "";
+    return str;
+}
 int main()
 {
-    string t = "11010111111111111110011";
     bigint x;
-    BinaryToBigint(x, t);
+    bigint y;
+    string t = "1111111111111111111111111111322222222222222222222222222333333333333333333";
+    string s = "1111111111111111111111111113333333333333333";
+    DecimalToBigint(x, s);
+    DecimalToBigint(y, t);
+    for (int i = 0; i < x.nbytes; i++)
+        cout << int(x.data[i]) << " ";
+    cout << endl;
+    for (int i = 0; i < y.nbytes; i++)
+        cout << int(y.data[i]) << " ";
+    cout << endl;
+    bigint z = x*y;
+    for (int i = 0; i < z.nbytes; i++)
+    {
+        cout << int(z.data[i]) << " ";
+    }
     freedata(x);
+    freedata(y);
+    freedata(z);
 }
