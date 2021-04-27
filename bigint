@@ -379,16 +379,53 @@ string BigintToDecimal(bigint x)
     }
     return str;
 }
+
+string AddBinary(string x, string y)
+{
+    reverse(x.begin(), x.end());
+    reverse(y.begin(), y.end());
+    int nx = x.length();
+    int ny = y.length();
+    int n = (nx > ny) ? nx : ny;
+    int carry = 0;
+    int a = 0;
+    string str = "";
+    if (n - nx > 0)
+        for (int i = nx; i < n; i++)
+        {
+            x += "0";
+        }
+    else
+        for (int i = ny; i < n; i++)
+            y += "0";
+    for (int i = 0; i < n; i++)
+    {
+        a = (x[i] - '0') + (y[i] - '0') + carry;
+        if (a > 1)
+        {
+            a = a - 2;
+            carry = 1;
+        }
+        else
+            carry = 0;
+        str += a + '0';
+    }
+    if (carry > 0)
+        str += "1";
+    reverse(str.begin(), str.end());
+    return str;
+}
+
 int main()
 {
     bigint x;
     bigint y;
-    string t = "160888";
-    string s = "150777";
+    string t = "1100111";
+    string s = "1001";
     DecimalToBigint(x, s);
     DecimalToBigint(y, t);
     bigint z = x * y;
-    cout<<BigintToDecimal(z);
+    cout << AddBinary(s, t);
     freedata(x);
     freedata(y);
     freedata(z);
