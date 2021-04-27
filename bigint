@@ -332,32 +332,63 @@ bool BigintNonZero(bigint x)
     return 0;
 }
 
+string IntToString(int a)
+{
+    string str = "";
+    while (a > 0)
+    {
+        str += (a % 10) + '0';
+        a /= 10;
+    }
+    reverse(str.begin(), str.end());
+    return str;
+}
 
+string operator*(string s, int num)
+{
+    string str = "0";
+    string tmp = "0";
+    int n = s.length();
+    for (int i = n-1; i >= 0 ; i--)
+    {
+        int a = (s[i] - '0') * 256;
+        tmp = IntToString(a);
+        for (int j =0;j<n-1-i; j++)
+        {
+            tmp += "0";
+        }
+        str = str + tmp;
+        tmp = "";
+    }
+    return str;
+}
 
 string BigintToDecimal(bigint x)
 {
-    string str = "";
+    string str = "0";
+    string tmp;
+    int n = x.nbytes;
+    for (int i = 0; i < n; i++)
+    {
+        tmp = IntToString(x.data[i]);
+        for (int j = 0; j < i; j++)
+        {
+            tmp = tmp * 256;
+        }
+        str = str + tmp;
+    }
     return str;
 }
 int main()
 {
     bigint x;
     bigint y;
-    string t = "1111111111111111111111111111322222222222222222222222222333333333333333333";
-    string s = "1111111111111111111111111113333333333333333";
+    string t = "160888";
+    string s = "150777";
     DecimalToBigint(x, s);
     DecimalToBigint(y, t);
-    for (int i = 0; i < x.nbytes; i++)
-        cout << int(x.data[i]) << " ";
-    cout << endl;
-    for (int i = 0; i < y.nbytes; i++)
-        cout << int(y.data[i]) << " ";
-    cout << endl;
-    bigint z = x*y;
-    for (int i = 0; i < z.nbytes; i++)
-    {
-        cout << int(z.data[i]) << " ";
-    }
+    bigint z = x * y;
+    cout<<BigintToDecimal(z);
     freedata(x);
     freedata(y);
     freedata(z);
