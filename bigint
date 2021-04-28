@@ -416,16 +416,151 @@ string AddBinary(string x, string y)
     return str;
 }
 
+bool operator>(bigint x, bigint y)
+{
+    int nx = x.nbytes;
+    int ny = y.nbytes;
+    int n = (nx > ny) ? nx : ny;
+    if (n - nx > 0)
+    {
+        for (int i = n - 1; i >= nx; i--)
+        {
+            if (y.data[i] > 0)
+                return false;
+        }
+    }
+    else if(n-ny>0)
+    {
+        for (int i = n - 1; i >= ny; i--)
+        {
+            if (x.data[i] > 0)
+                return true;
+        }
+    }
+    else
+        for (int i = n - 1; i >= 0; i--)
+        {
+            if (x.data[i] > y.data[i])
+                return true;
+            if (x.data[i] < y.data[i])
+                return false;
+        }
+    return 0;
+}
+
+bool operator<(bigint x, bigint y)
+{
+    int nx = x.nbytes;
+    int ny = y.nbytes;
+    int n = (nx > ny) ? nx : ny;
+    if (n - nx > 0)
+    {
+        for (int i = n - 1; i >= nx; i--)
+        {
+            if (y.data[i] > 0)
+                return true;
+        }
+    }
+    else if (n - ny > 0)
+    {
+        for (int i = n - 1; i >= ny; i--)
+        {
+            if (x.data[i] > 0)
+                return false;
+        }
+    }
+    else
+        for (int i = n - 1; i >= 0; i--)
+        {
+            if (x.data[i] > y.data[i])
+                return false;
+            if (x.data[i] < y.data[i])
+                return true;
+        }
+    return 0;
+}
+
+bool operator==(bigint x, bigint y)
+{
+    return !((x < y) || (x > y));
+}
+
+bigint operator-(bigint x, bigint y)
+{
+    bigint res;
+    int nx = x.nbytes;
+    int ny = y.nbytes;
+    int n = (nx > ny) ? nx : ny;
+    int mem = 0;
+    int tmp = 0;
+    if (x == y)
+    {
+        n = 1;
+        res.sign = 0;
+        res.data = new BYTE[1];
+        res.data[0] = 0;
+    }
+    else if (x > y)
+    {
+        res.data = new BYTE[n];
+        res.sign = 0;
+        for (int i = 0; i < ny; i++)
+        {
+            tmp = x.data[i] - y.data[i] - mem;
+            if (tmp < 0)
+            {
+                tmp = x.data[i] + 10 - y.data[i] - mem;
+                mem = 1;
+            }
+            else
+                mem = 0;
+            res.data[i] = tmp;
+        }
+        if (mem > 0)
+            res.data[ny] = x.data[ny] - mem;
+        for (int i = ny + 1; i < nx; i++)
+        {
+            res.data[i] = x.data[i];
+        }
+    }
+    else
+    {
+        res.data = new BYTE[n];
+        res.sign = 1;
+        for (int i = 0; i < nx; i++)
+        {
+            tmp = y.data[i] - x.data[i] - mem;
+            if (tmp < 0)
+            {
+                tmp = y.data[i] + 10 - x.data[i] - mem;
+                mem = 1;
+            }
+            else
+                mem = 0;
+            res.data[i] = tmp;
+        }
+        if (mem > 0)
+            res.data[nx] = y.data[nx] - mem;
+        for (int i = nx + 1; i < ny; i++)
+        {
+            res.data[i] = y.data[i];
+        }
+    }  
+    res.nbytes = n;
+    return res;
+}
+
 int main()
 {
     bigint x;
     bigint y;
-    string t = "1100111";
-    string s = "1001";
+    string t = "1231234";
+    string s = "12312345";
     DecimalToBigint(x, s);
     DecimalToBigint(y, t);
-    bigint z = x * y;
-    cout << AddBinary(s, t);
+    bigint z = x - y;
+    cout << BigintToDecimal(z);
+    //cout << BigintToBinary(z) << endl;
     freedata(x);
     freedata(y);
     freedata(z);
