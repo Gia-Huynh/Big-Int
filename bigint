@@ -68,6 +68,11 @@ void allocation(bigint& x,string s)
 
 void DecimalToBigint(bigint& x, string s)
 {
+    if (s[0] == '-')
+    {
+        x.sign = 1;
+        s.erase(s.begin());
+    }
     int carry = 0;
     string res = "";
     int a = 0;
@@ -89,7 +94,7 @@ void DecimalToBigint(bigint& x, string s)
     }
 }
 
-string decimaltobinary(BYTE n)
+string DecimalToBinary(BYTE n)
 {
     string str = "";
     int cnt = 0;
@@ -105,21 +110,6 @@ string decimaltobinary(BYTE n)
         cnt++;
     }
     reverse(str.begin(), str.end());
-    return str;
-}
-
-string BigintToBinary(bigint x)
-{
-    string str = "";
-    for (int i = x.nbytes-1; i >= 0; i--)
-    {
-        str+=decimaltobinary(x.data[i]);
-    }
-    int i = 0;
-    while (str[i] == '0')
-    {
-        str.erase(str.begin());
-    }
     return str;
 }
 
@@ -550,17 +540,73 @@ bigint operator-(bigint x, bigint y)
     return res;
 }
 
+void twocomplement(string& t)
+{
+    int tmp = 0;
+    int n = t.length();
+    for (int i = 0; i < n; i++)
+    {
+        tmp = t[i] - '0';
+        t[i] = (1 - tmp) + '0';
+    }
+    t = AddBinary(t, "1");
+}
+
+string operator~(string t)
+{
+    string res = "";
+    int n = t.length();
+    for (int i = 0; i < n; i++)
+    {
+        int tmp = t[i] - '0';
+        tmp = 1 - tmp;
+        res += tmp + '0';
+    }
+    return res;
+}
+string BigintToBinary(bigint x)
+{
+    string str = "";
+    for (int i = x.nbytes - 1; i >= 0; i--)
+    {
+        str += DecimalToBinary(x.data[i]);
+    }
+    int i = 0;
+    while (str[i] == '0')
+    {
+        str.erase(str.begin());
+    }
+    reverse(str.begin(), str.end());
+    str += "0";
+    reverse(str.begin(), str.end());
+    if (x.sign == 1)
+        twocomplement(str);
+    return str;
+}
+
+void MultiplyBinary(string s, string t)
+{
+    bigint x;
+    bigint y;
+    BinaryToBigint(x,s);
+    BinaryToBigint(y,t);
+}
+
 int main()
 {
     bigint x;
     bigint y;
-    string t = "1231234";
-    string s = "12312345";
+    string t = "-2000";
+    string s ="1999";
+    string p;
     DecimalToBigint(x, s);
     DecimalToBigint(y, t);
-    bigint z = x - y;
-    cout << BigintToDecimal(z);
-    //cout << BigintToBinary(z) << endl;
+    bigint z;
+    DecimalToBigint(z,t);
+    p = BigintToBinary(z);
+    cout << BigintToBinary(z) << endl;
+    cout << BigintToBinary(x) << endl;
+    cout << (~p);
     freedata(x);
     freedata(y);
     freedata(z);
