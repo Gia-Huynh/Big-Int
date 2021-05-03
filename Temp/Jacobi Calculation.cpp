@@ -23,7 +23,7 @@
   end
 end*/
 
-int jacobi_cpp (Bigint n, Bigint/Int ? k)
+int jacobi_cpp (Bigint n, Bigint k)
 {
 	if ((k<=0) || (k%2 != 1)) 
 	{printf ("ERROR IN JACOBI CALCULATION, ASSERTION K FAILED"); return 2;};
