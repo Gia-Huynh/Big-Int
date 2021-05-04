@@ -12,20 +12,20 @@ typedef struct Bigint
     BYTE sign = 0; // 1 is negative ,0 is positive
     int nbytes = 0;
     BYTE* data = NULL;
-   void operator=(const Bigint& x)
+    void operator=(const Bigint& x)
     {
-       if (nbytes && data != x.data)
-       {
-           delete[]data;
-       }
-    nbytes = x.nbytes;
-    data = new BYTE[nbytes];
-    for (int i = 0; i < nbytes; i++)
-    {
-        data[i] = x.data[i];
+        if (nbytes && data != x.data)
+        {
+            delete[]data;
+        }
+        nbytes = x.nbytes;
+        data = new BYTE[nbytes];
+        for (int i = 0; i < nbytes; i++)
+        {
+            data[i] = x.data[i];
+        }
+        sign = x.sign;
     }
-    sign = x.sign;
-}
 } bigint;
 
 void freedata(bigint x);
@@ -40,7 +40,11 @@ void allocation(bigint& x, string s);
 
 Bigint ShiftLeft(Bigint x);
 
+bigint ShiftL(bigint x);
+
 Bigint ShiftRight(Bigint x);
+
+void copy(bigint& x, const bigint& y);
 
 void DecimalToBigint(bigint& x, string s);
 
@@ -68,7 +72,7 @@ int BinaryToInt(string s);
 
 void BinaryToBigint(bigint& x, string s);
 
-int operator>(bigint x, bigint y);
+int operator>(bigint x,bigint y);
 
 bigint BigintAddition(bigint x, bigint y);
 
@@ -82,6 +86,12 @@ bigint operator-(bigint x, bigint y);
 
 bigint operator*(bigint x, bigint y);
 
-bigint operator/(bigint x, bigint y);
+bigint operator/(const bigint& x, const bigint& y);
 
-bigint operator%(bigint x, bigint y);
+bigint operator%(const bigint &x,const bigint &y);
+
+bool BigintIsNonZero(bigint x);
+
+string BigintToDecimal(const bigint &x);
+
+bigint BigintDivision(const bigint& x, int num);
