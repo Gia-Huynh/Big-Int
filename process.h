@@ -80,6 +80,10 @@ bigint BigintSubstraction(bigint x, bigint y);
 
 bigint BigintMultiplication(bigint x, int num);
 
+bigint BigintDivision(const bigint& x, int num);
+
+bigint BigintMod(const bigint& x, int num);
+
 bigint operator+(bigint x, bigint y);
 
 bigint operator-(bigint x, bigint y);
@@ -93,5 +97,3 @@ bigint operator%(const bigint &x,const bigint &y);
 bool BigintIsNonZero(bigint x);
 
 string BigintToDecimal(const bigint &x);
-
-bigint BigintDivision(const bigint& x, int num);

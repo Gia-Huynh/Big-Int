@@ -604,6 +604,17 @@ bigint BigintMultiplication( bigint x, int num)
     return res;
 }
 
+bigint BigintMod(const bigint &x, int num)
+{
+    bigint res;
+    bigint tmp;
+    copy(tmp, BigintDivision(x, 10));
+    copy(res, BigintMultiplication(tmp, 10));
+    copy(res, x-res);
+    freedata(tmp);
+    return res;
+}
+
 bigint operator+(bigint x,bigint y)
 {
     bigint res;
@@ -813,21 +824,16 @@ string BigintToDecimal(const bigint &x)
     string t = "";
     bigint tmp_x1;
     tmp_x1 = x;
-    bigint y;
-    y.data = new BYTE[1];
-    y.data[0] = 10;
-    y.nbytes = 1;
-    y.sign = 0;
+    bigint carry;
     while (BigintIsNonZero(tmp_x1))
     {
-        bigint carry;
-        copy(carry, (tmp_x1 % y));
+       
+        copy(carry,BigintMod(tmp_x1 , 10));
         t += carry.data[0] + '0';
-        copy(tmp_x1, tmp_x1 / y);
-        freedata(carry);
+        copy(tmp_x1, BigintDivision(tmp_x1, 10));
     }
     reverse(t.begin(), t.end());
-    freedata(y);
     freedata(tmp_x1);
+    freedata(carry);
     return t;
 }
