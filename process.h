@@ -3,6 +3,7 @@
 #include<stdint.h>
 #include <bitset>
 #include<string>
+#include<fstream>
 
 typedef unsigned char BYTE;
 using namespace std;
@@ -97,3 +98,5 @@ bigint operator%(const bigint &x,const bigint &y);
 bool BigintIsNonZero(bigint x);
 
 string BigintToDecimal(const bigint &x);
+
+int countspace(string t);

@@ -837,3 +837,15 @@ string BigintToDecimal(const bigint &x)
     freedata(carry);
     return t;
 }
+
+int countspace(string t)
+{
+    int s = 0;
+    int n = t.length();
+    for (int i = 0; i < n; i++)
+    {
+        if (t[i] == ' ')
+            s++;
+    }
+    return s;
+}
