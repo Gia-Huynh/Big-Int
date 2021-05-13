@@ -762,7 +762,7 @@ bigint operator/(const bigint &x,const bigint &y)
     copy(count, ShiftRight(count));
     copy(carry, ShiftRight(carry));
     carry.data[0] = 0;
-    count.data[0] = 1;  
+    count.data[0] = 1;
     bigint tmp_x, tmp_y;
     if ((x > y) != -1)
     {
@@ -786,6 +786,8 @@ bigint operator/(const bigint &x,const bigint &y)
             }
         } while ((tmp_x > y) != -1);
     }
+    if (x.sign != y.sign)
+        carry.sign = 1;
     freedata(tmp_x);
     freedata(tmp_y);
     freedata(count);
@@ -807,6 +809,33 @@ bigint operator%(const bigint &x,const bigint &y)
     freedata(tmp);
     freedata(tmp_x);
     freedata(tmp_y);
+    return res;
+}
+
+bigint operator~(const bigint& x)
+{
+    bigint res;
+    res.sign = 1 - x.sign;
+    res.nbytes = x.nbytes;
+    res.data = new BYTE[res.nbytes];
+    for (int i = 0; i < res.nbytes; i++)
+    {
+        res.data[i] = x.data[i];
+    }
+    bigint tmp;
+    tmp.sign = 1;
+    tmp.nbytes = 1;
+    tmp.data = new BYTE[1];
+    tmp.data[0] = 1;
+    copy(res, res + tmp);
+    freedata(tmp);
+    return res;
+}
+
+bigint square(const bigint& x)
+{
+    bigint res;
+    copy(res, res * res);
     return res;
 }
 
@@ -832,9 +861,13 @@ string BigintToDecimal(const bigint &x)
         t += carry.data[0] + '0';
         copy(tmp_x1, BigintDivision(tmp_x1, 10));
     }
+    if (x.sign == 1)
+        t += "-";
     reverse(t.begin(), t.end());
     freedata(tmp_x1);
     freedata(carry);
+    if (t.length() == 0)
+        return "0";
     return t;
 }
 
