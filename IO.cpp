@@ -58,6 +58,14 @@ void IO()
 					fo << BigintToBinary(z);
 					freedata(z);
 				}
+				else
+				{
+					bigint z;
+					DecimalToBigint(z, t3);
+					copy(z, ~z);
+					fo << BigintToDecimal(z);
+					freedata(z);
+				}
 			}
 		}
 		else
@@ -120,7 +128,7 @@ void IO()
 					freedata(y);
 					freedata(z);
 				}
-				else
+				else if(t3 == "/")
 				{
 					bigint x, y, z;
 					DecimalToBigint(x, t2);
@@ -131,13 +139,12 @@ void IO()
 					freedata(y);
 					freedata(z);
 				}
+
 			}
 		}
 		if (i < n-1)
 			fo << endl;
 	}
-    delete[]a;
-    a=nullptr;
 	fi.close();
 	fo.close();
 }
