@@ -30,7 +30,7 @@ int PrimeTest (Bigint n)
 	while (d % 2 == 0)
 	{
 		d = d / 2;
-		if (powermod (2, d,n) - n == -1) return 1;
+		if (powermod (2, d, n) - n == -1) return 1;
 	};
 	if (powermod (2, d, n) == 1) return 1;
 	return 0;
