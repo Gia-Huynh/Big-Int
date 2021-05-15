@@ -848,12 +848,12 @@ bigint operator/(const bigint &x,const bigint &y)
     freedata(tmp_x);
     freedata(tmp_y);
     freedata(count);
+    DecimalToBigint(carry, BigintToDecimal(carry));
     return carry;
 }
 
 bigint operator%(const bigint &x,const bigint &y)
 {
-    //cout << "\nOperator \% ";
     bigint res;
     bigint tmp;
     bigint tmp_x;
@@ -864,11 +864,12 @@ bigint operator%(const bigint &x,const bigint &y)
     //cout << "\ny: " << BigintToDecimal(y);
     copy(tmp, tmp_x / tmp_y);
     copy(tmp, tmp * tmp_y);
-    copy(tmp, tmp_x - tmp); // OK, khong leak
+    copy(tmp, tmp_x - tmp); 
     res = tmp;
     freedata(tmp);
     freedata(tmp_x);
     freedata(tmp_y);
+    DecimalToBigint(res, BigintToDecimal(res));
     return res;
 }
 
@@ -1076,6 +1077,7 @@ bigint operator%(const bigint& x, const int& y)
     freedata(tmp);
     freedata(tmp_x);
     freedata(tmp_y);
+    DecimalToBigint(res, BigintToDecimal(res));
     return res;
 }
 
@@ -1095,26 +1097,21 @@ Bigint powermod(int base_int, Bigint exponent, Bigint modulus) {
     DecimalToBigint(result, 1);
     Bigint exponent_mod = DecToBigint_2(0);
     while (exponent > 0) {
-        //copy(exponent_mod, exponent % 2);
+        copy(exponent_mod, exponent % 2);
+        //cout << "\nexponent_mod: " << BigintToDecimal(exponent_mod) << " " << exponent_mod.nbytes;
+        //cout << "\nDecBigInt: " << BigintToDecimal(DecToBigint_2(1)) << " " << DecToBigint_2(1).nbytes;
         if (exponent_mod == DecToBigint_2(1)) {
-            printf("modulos");
+            //cout << "modulos";
             copy(result, (result * base));
             copy(result, (result % modulus));
             copy(exponent, exponent - DecToBigint_2(1));
         }
         //base = (base * base) % modulus;
 
-        cout << "\nWait 1s.... ";
-        for (long long i = 0; i < 400000000; i++) {};
 
-        printf("\nbase = base * base");
-        copy(base, base * base); //ok ?
+        //cout << "\nbased:   " << BigintToDecimal(base);
+        copy(base, base * base); 
 
-        cout << "\nWait 1s.... ";
-        for (long long i = 0; i < 700000000; i++) {};//ok
-        cout << "\nDone.... \n\n";
-
-        //printf("\nbase = base % modulus");
         copy(base, base % modulus); // ok 
         //cout << "\nbased:   " << BigintToDecimal(base); //ok
         //cout << "\nexponent: " << BigintToDecimal(exponent); //ok
@@ -1136,21 +1133,27 @@ int PrimeTest(Bigint n)
         return 2;
     };
     Bigint d = n - DecToBigint_2(1);
-    cout << "\nD: " << BigintToDecimal(d);
+    cout << "\nOG D: " << BigintToDecimal(d);
     //D = 2^x * d;
     int s = 0;
     Bigint zero = DecToBigint_2(0);
     Bigint pwm_result;
-    while (d % 2 == zero)
+    Bigint temp_d;
+    copy(zero, d % 2);
+    do
     {
-        cout << "\n2*d: " << BigintToDecimal(d);
         //D = 2^(x-1) * d
         copy(d, d / DecToBigint_2(2));
+        DecimalToBigint(temp_d, BigintToDecimal(d));
+        copy(pwm_result, powermod(2, temp_d, n) - n);
         cout << "\nd: " << BigintToDecimal(d);
-        copy(pwm_result, powermod(2, d, n) - n);
-        if (pwm_result == DecToBigint_2 (-1)) return 1;
-    };
+        cout << "\nN: " << BigintToDecimal(n);
+        cout << "\nResult: " << BigintToDecimal(pwm_result);
+        if ((pwm_result > DecToBigint_2 (-1)) == 0) return 1;
+        copy(zero, d % 2);
+    } while (zero == DecToBigint_2(0));
     //D = 2^0 * d
+    cout << "\nResult LAST D: " << BigintToDecimal(powermod(2, d, n));
     if (powermod(2, d, n) == DecToBigint_2(1)) return 1;
     return 0;
 };
@@ -1201,5 +1204,5 @@ bool PrimeCheck(const bigint x)
     //Miller Rabin
     cout << "\nx: " << BigintToDecimal(x);
     if (PrimeTest(x) != 1) return 0;
-    printf("So nguyen to\n");
+    printf("\nSo nguyen to\n");
 };
