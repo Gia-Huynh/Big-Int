@@ -4,7 +4,9 @@
 #include <bitset>
 #include<string>
 #include<fstream>
-
+#include <cstdio>
+#include <ctime>
+#pragma once
 typedef unsigned char BYTE;
 using namespace std;
 
@@ -101,6 +103,7 @@ bool BigintIsNonZero(bigint x);
 
 string BigintToDecimal(const bigint &x);
 
+int countspace(string t);
+bool PrimeCheck(const bigint x);
 bigint BigintDivision(const bigint& x, int num);
 
-int countspace(string t);
