@@ -99,7 +99,7 @@ void IO()
 				{
 					bigint x, y, z;
 					DecimalToBigint(x, t2);
-					DecimalToBigint(y, t2);
+					DecimalToBigint(y, t4);
 					copy(z, x + y);
 					fo << BigintToDecimal(z);
 					freedata(x);
@@ -110,7 +110,7 @@ void IO()
 				{
 					bigint x, y, z;
 					DecimalToBigint(x, t2);
-					DecimalToBigint(y, t2);
+					DecimalToBigint(y, t4);
 					copy(z, x - y);
 					fo << BigintToDecimal(z);
 					freedata(x);
@@ -121,7 +121,7 @@ void IO()
 				{
 					bigint x, y, z;
 					DecimalToBigint(x, t2);
-					DecimalToBigint(y, t2);
+					DecimalToBigint(y, t4);
 					copy(z, x * y);
 					fo << BigintToDecimal(z);
 					freedata(x);
@@ -132,7 +132,7 @@ void IO()
 				{
 					bigint x, y, z;
 					DecimalToBigint(x, t2);
-					DecimalToBigint(y, t2);
+					DecimalToBigint(y, t4);
 					copy(z, x / y);
 					fo << BigintToDecimal(z);
 					freedata(x);
