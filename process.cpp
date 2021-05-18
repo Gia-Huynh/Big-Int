@@ -1063,17 +1063,27 @@ int operator>(bigint x, int y)
 bigint operator%(const bigint& x, const int& y)
 {
     bigint res;
-    bigint tmp;
     bigint tmp_x;
     bigint tmp_y;
-    tmp_x = x;
-    DecimalToBigint(tmp_y, y);
-    //tmp_y = y;
-    copy(tmp, tmp_x / tmp_y);
-    copy(tmp, tmp * tmp_y);
-    copy(tmp, tmp_x - tmp);
-    res = tmp;
-    freedata(tmp);
+    if ((x > y) != -1)
+    {
+        tmp_x = x;
+        tmp_y = y;
+        do
+        {
+            copy(tmp_x, tmp_x - tmp_y);
+            copy(tmp_y, BigintMultiplication(tmp_y, 2));
+        } while ((tmp_x > tmp_y) != -1);
+        do
+        {
+            copy(tmp_y, BigintDivision(tmp_y, 2));
+            if ((tmp_x > tmp_y) != -1)
+            {
+                tmp_x = tmp_x - tmp_y;
+            }
+        } while ((tmp_x > y) != -1);
+    }
+    res = tmp_x;
     freedata(tmp_x);
     freedata(tmp_y);
     return res;
