@@ -1203,3 +1203,11 @@ bool PrimeCheck(const bigint x)
     if (PrimeTest(x) != 1) return 0;
     printf("So nguyen to\n");
 };
+
+bigint Abs(const bigint& x)
+{
+    bigint res;
+    res = x;
+    res.sign = -res.sign;
+    return res;
+}
