@@ -95,6 +95,8 @@ bigint operator/(const bigint& x, const bigint& y);
 
 bigint operator%(const bigint &x,const bigint &y);
 
+bigint power(const bigint& x, const bigint& y);
+
 bigint operator~(const bigint& x);
 
 bigint square(const bigint& x);

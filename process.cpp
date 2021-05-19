@@ -1089,6 +1089,34 @@ bigint operator%(const bigint& x, const int& y)
     return res;
 }
 
+bigint power(const bigint& x, const bigint& y) // x^y
+{
+    bigint res;
+    bigint sum;
+    bigint tmp_y;
+    bigint tmp;
+    tmp_y = y;
+    res = x;
+    copy(sum, ShiftRight(sum));
+    copy(tmp, ShiftRight(tmp));
+    sum.data[0] = 1;
+    tmp.data[0] = 1;
+    while ((tmp_y > tmp))
+    {
+        if (tmp_y.data[tmp_y.nbytes - 1] % 2 == 1)
+        {
+            copy(sum, sum * res);
+        }
+        copy(res, res * res);
+        copy(tmp_y, BigintDivision(tmp_y, 2));
+    }
+    copy(res, sum * res);
+    freedata(sum);
+    freedata(tmp);
+    freedata(tmp_y);
+    return res;
+}
+
 bigint min (bigint x, bigint y)
 {
     if (x > y) return y; else return x;
