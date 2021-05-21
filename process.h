@@ -107,3 +107,4 @@ int countspace(string t);
 bool PrimeCheck(const bigint x);
 bigint BigintDivision(const bigint& x, int num);
 
+bigint DecToBigint_2(int s_int);

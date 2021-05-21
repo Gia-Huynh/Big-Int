@@ -634,7 +634,8 @@ bigint BigintMod(const bigint &x, int num)
     return res;
 }
 
-bigint operator+(bigint x,bigint y)
+
+bigint operator+(bigint x, bigint y)
 {
     bigint res;
     if (x.sign == 0)
@@ -662,49 +663,39 @@ bigint operator+(bigint x,bigint y)
     {
         if (y.sign == 0)
         {
-            if ((x > y))
+            if ((x > y) != -1)
             {
-                copy(res,BigintSubstraction(x, y));
+                copy(res, BigintSubstraction(x, y));
                 res.sign = 1;
             }
             else
             {
-                copy(res,BigintSubstraction(x, y));
+                copy(res, BigintSubstraction(y, x));
                 res.sign = 0;
             }
         }
         else
         {
-            copy(res,BigintAddition(x, y));
+            copy(res, BigintAddition(x, y));
             res.sign = 1;
         }
     }
     return res;
 }
-
-bigint operator-(bigint x,bigint y)
-{   
+bigint operator-(bigint x, bigint y)
+{
     bigint res;
-    if ((x > y) == 0)
-    {
-        res.nbytes = 1;
-        res.data = new BYTE[1];
-        res.sign = 0;
-        res.data[0] = 0;
-        return res;
-    }
-    if ((x > y) == 1)
-    {
-        copy(res, BigintSubstraction(x, y));
-        res.sign = 0;
-    }
-    else
-    {
-        copy(res, BigintSubstraction(y, x));
-        res.sign = 1;
-    }
+    bigint tmp_y;
+    bigint tmp_x;
+    tmp_x = x;
+    tmp_y = y;
+    tmp_y.sign = 1 - tmp_y.sign;
+    copy(res, tmp_x + tmp_y);
+    freedata(tmp_x);
+    freedata(tmp_y);
     return res;
 }
+
 
 bigint operator*(bigint x,bigint y)
 {
@@ -775,8 +766,7 @@ bigint BigintDivision(const bigint &x,int num)
     freedata(tmp_x);
     return res;
 }
-
-bigint operator/(const bigint &x,const bigint &y)
+bigint operator/(const bigint& x, const bigint& y)
 {
     bigint carry, count;
     copy(count, ShiftRight(count));
@@ -788,6 +778,8 @@ bigint operator/(const bigint &x,const bigint &y)
     {
         tmp_x = x;
         tmp_y = y;
+        tmp_x.sign = 0;
+        tmp_y.sign = 0;
         do
         {
             copy(carry, carry + count);
@@ -806,12 +798,17 @@ bigint operator/(const bigint &x,const bigint &y)
             }
         } while ((tmp_x > y) != -1);
     }
+    else
+    {
+        freedata(tmp_x);
+        freedata(tmp_y);
+        return carry;
+    }
     if (x.sign != y.sign)
         carry.sign = 1;
     freedata(tmp_x);
     freedata(tmp_y);
     freedata(count);
-    DecimalToBigint(carry, BigintToDecimal(carry));
     return carry;
 }
 
@@ -1214,28 +1211,30 @@ int jacobi_cpp(Bigint &k, Bigint &n)
     else return 0;
 };
 
-bigint lucas(char mode, bigint &n, bigint &p, bigint &q)
+bigint lucas_mod(char mode, bigint &n, bigint &p, bigint &q, bigint &x)
 {
+    cout << "\nLucas p: " << BigintToDecimal(p) << "\nq: " << BigintToDecimal(q) << "\nn: " << BigintToDecimal(n);
     bigint n1;
     bigint n2;
     bigint n3;
     if (mode == 'u')
     {
+        cout << "\nLucas mode U";
         DecimalToBigint(n1, 0);
         DecimalToBigint(n2, 1);
         DecimalToBigint(n3, BigintToDecimal (p));
+        //cout << "\nInitialize Lucas sequence n3: " << BigintToDecimal(n3);
     }
     else if (mode == 'v')
     {
+        cout << "\nLucas mode V";
         DecimalToBigint(n1, 2);
         DecimalToBigint(n2, BigintToDecimal(p));
         copy(n3, p * DecToBigint_2 (1));
         copy(n3, n3 * p);
-        cout << "\nInitialize Lucas sequence n3: " << BigintToDecimal(n3);
-        copy(n3, DecToBigint_2(1) - DecToBigint_2 (-1));
-        cout << "\nInitialize Lucas sequence n3: " << BigintToDecimal(n3);
         copy(n3, n3 - q);
-        cout << "\nInitialize Lucas sequence n3: " << BigintToDecimal(n3);
+        copy(n3, n3 - q);
+        //cout << "\nInitialize Lucas sequence n3: " << BigintToDecimal(n3);
     }
     else
     {
@@ -1243,8 +1242,10 @@ bigint lucas(char mode, bigint &n, bigint &p, bigint &q)
         return DecToBigint_2 (-1);
     };
     bigint m;
-    DecimalToBigint (m,2);
+    DecimalToBigint (m, 2);
     bigint gay;
+    bigint one;
+    DecimalToBigint(one, 1);
     if (n == 0) return n1; else if (n == 1) return n2; else if (n == 2) return n3;
     cout << "\np: " << BigintToDecimal(p) << "\nq: " << BigintToDecimal(q);
     cout << "\nLucas sequence n1: " << BigintToDecimal(n1);
@@ -1252,22 +1253,31 @@ bigint lucas(char mode, bigint &n, bigint &p, bigint &q)
     cout << "\nLucas sequence n3: " << BigintToDecimal(n3);
     while (m > n == -1)
     {
-        cout << "\nLucas sequence: " << BigintToDecimal(n3);
-        copy(n1, n2 * DecToBigint_2(1));
-        copy(n2, n3 * DecToBigint_2(1));
+        //cout << "\nm: " << BigintToDecimal(m) << "n: " << BigintToDecimal(n);
+        cout << "\n Lucas N3: " << BigintToDecimal(n3);
+        copy(n1, n2 * one);
+        copy(n2, n3 * one);
         copy(gay, n1 * q);
+        copy(gay, gay % x);
+        cout << "\nQ * (N-2): " << BigintToDecimal(gay);
         copy(n3, n2 * p);
+        copy(n3, n3 % x);
+        cout << "\nP * (N-1): " << BigintToDecimal(n3);
         copy(n3, n3 - gay);
-        copy(m, m + DecToBigint_2(1));
+        cout << "\n Lucas N3: " << BigintToDecimal(n3);
+        copy(n3, n3 % x);
+        copy(m, m + one);
     };
+    cout << "\n Lucas N3: " << BigintToDecimal(n3);
+    cout << "\nLucas done\n";
     return n3;
 };
 
 bool Lucas_test(bigint &x, bigint &D, bigint &p, bigint &q)
 {
+    cout << "\nLucas OG X: " << BigintToDecimal(x);
     Bigint d;
     copy(d, x + DecToBigint_2(1));
-
     cout << "\nLucas OG D: " << BigintToDecimal(d);
     cout << "\n";
     //D = 2^x * d;
@@ -1276,28 +1286,35 @@ bool Lucas_test(bigint &x, bigint &D, bigint &p, bigint &q)
     Bigint pwm_result;
     Bigint temp_d;
 
-    copy(d, d / DecToBigint_2(2));
     copy(zero, d % 2);
-    while (zero == DecToBigint_2(0))
+    cout << "\nD % 2: " << BigintToDecimal(zero);
+    cout << "\nOG D: " << BigintToDecimal(d);
+    copy(d, d / DecToBigint_2(2));
+    cout << "\nD/2: " << BigintToDecimal(d);
+    while (zero > DecToBigint_2(0) == 0)
     {
         //D = 2^(x-1) * d
-        DecimalToBigint(temp_d, BigintToDecimal(d));
-        copy(pwm_result, lucas('v', D, p, q));
-        copy(pwm_result, pwm_result % x);
-        
         cout << "\nD: " << BigintToDecimal(d);
         cout << "\nX: " << BigintToDecimal(x);
-        cout << "\nResult: " << BigintToDecimal(pwm_result);
+        DecimalToBigint(temp_d, BigintToDecimal(d));
+        copy(pwm_result, lucas_mod('v', d, p, q, x));
+        cout << "\nLucas: " << BigintToDecimal(pwm_result);
+        copy(pwm_result, pwm_result % x);
+        cout << "\nLucas % X: " << BigintToDecimal(pwm_result);
+        
         if ((pwm_result > DecToBigint_2(0)) == 0) return 1;
 
-        copy(d, d / DecToBigint_2(2));
         copy(zero, d % 2);
+        if (zero > DecToBigint_2(0) != 0) break;
+        copy(d, d / DecToBigint_2(2));
         cout << "\nD divided: " << BigintToDecimal(d);
     } ;
     //D = 2^0 * d
-    copy(pwm_result, lucas('u', D, p, q));
+    copy(pwm_result, lucas_mod('u', d, p, q, x));
+    cout << "\nLucas: " << BigintToDecimal(pwm_result);
     copy(pwm_result, pwm_result % x);
-    if (pwm_result == DecToBigint_2(0)) return 1;
+    cout << "\nLucas % X: " << BigintToDecimal(pwm_result);
+    if ((pwm_result > DecToBigint_2(0)) == 0) return 1;
     return 0;
 };
 bool PrimeCheck(const bigint x)
@@ -1348,6 +1365,7 @@ bool PrimeCheck(const bigint x)
         copy(modResult, modResult * DecToBigint_2(-1));
         sign = sign * -1;
     };
+    cout << "\n Jacobi DONE \n";
     //modResult la D Set P = 1 and Q = (1 - D)/4
     //Perform a strong Lucas probable prime test on n using parameters D, P, and Q.
     bigint P;
@@ -1356,10 +1374,9 @@ bool PrimeCheck(const bigint x)
     copy(Q, DecToBigint_2(1) - modResult);
     copy(Q, Q / DecToBigint_2(4));
     DecimalToBigint(Q, BigintToDecimal (Q));
-
-    cout << "\n" << P.nbytes << " p " << P.sign;
-    cout << "\n" << Q.nbytes << " q " << Q.sign;
-    DecimalToBigint(n, BigintToDecimal(x));
+    copy(n, x + DecToBigint_2(0));
+    cout << "\nLucas OG X: " << BigintToDecimal(x);
+    cout << "\nLucas OG N: " << BigintToDecimal(n);
     if (Lucas_test(n, modResult, P, Q) == 1)
     {
         freedata(zero);
