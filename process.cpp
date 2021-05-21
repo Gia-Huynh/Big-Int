@@ -1254,17 +1254,17 @@ bigint lucas_mod(char mode, bigint &n, bigint &p, bigint &q, bigint &x)
     while (m > n == -1)
     {
         //cout << "\nm: " << BigintToDecimal(m) << "n: " << BigintToDecimal(n);
-        cout << "\n Lucas N3: " << BigintToDecimal(n3);
+        //cout << "\n Lucas N3: " << BigintToDecimal(n3);
         copy(n1, n2 * one);
         copy(n2, n3 * one);
         copy(gay, n1 * q);
         copy(gay, gay % x);
-        cout << "\nQ * (N-2): " << BigintToDecimal(gay);
+        //cout << "\nQ * (N-2): " << BigintToDecimal(gay);
         copy(n3, n2 * p);
         copy(n3, n3 % x);
-        cout << "\nP * (N-1): " << BigintToDecimal(n3);
+        //cout << "\nP * (N-1): " << BigintToDecimal(n3);
         copy(n3, n3 - gay);
-        cout << "\n Lucas N3: " << BigintToDecimal(n3);
+        //cout << "\n Lucas N3: " << BigintToDecimal(n3);
         copy(n3, n3 % x);
         copy(m, m + one);
     };
