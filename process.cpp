@@ -723,7 +723,9 @@ bigint operator+(bigint x,bigint y)
 bigint operator-(bigint x,bigint y)
 {   
     bigint res;
-    if ((x > y) == 0)
+    bigint tmp_y;
+    bigint tmp_x;
+   if ((x > y) == 0)
     {
         res.nbytes = 1;
         res.data = new BYTE[1];
@@ -731,16 +733,56 @@ bigint operator-(bigint x,bigint y)
         res.data[0] = 0;
         return res;
     }
-    if ((x > y) == 1)
-    {
-        copy(res, BigintSubstraction(x, y));
-        res.sign = 0;
-    }
-    else
-    {
-        copy(res, BigintSubstraction(y, x));
-        res.sign = 1;
-    }
+   if (x.sign == 0)
+   {
+       if (y.sign == 0)
+       {
+           if ((x > y) == 1)
+           {
+               copy(res, BigintSubstraction(x, y));
+               res.sign = 0;
+           }
+           else
+           {
+               copy(res, BigintSubstraction(y, x));
+               res.sign = 1;
+           }
+       }
+       else
+       {
+           y.sign = 0;
+           copy(res, BigintAddition(x, y));
+           res.sign = 0;
+       }
+   }
+   else
+   {
+       if (y.sign == 0)
+       {
+           x.sign = 0;
+           copy(res, BigintAddition(x, y));
+           res.sign = 1;
+       }
+       else
+       {
+           if ((y > x) != -1)
+           {
+               copy(res, BigintSubstraction(y, x));
+               res.sign = 0;
+           }
+           else
+           {
+               copy(res, BigintSubstraction(x, y));
+               res.sign = 1;
+           }
+       }
+   }
+    /*tmp_x = x;
+    tmp_y = y;
+    tmp_y.sign = 1 - tmp_y.sign;
+    copy(res, tmp_x + tmp_y);
+    freedata(tmp_x);
+    freedata(tmp_y);*/
     return res;
 }
 
