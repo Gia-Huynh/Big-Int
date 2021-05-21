@@ -155,44 +155,6 @@ void DecimalToBigint(bigint& x, string s)
     }
 }
 
-void DecimalToBigint(bigint& x, int s_int)
-{
-    string s = to_string(s_int);
-    if (s == "0")
-    {
-        x.data = new BYTE[1];
-        x.data[0] = 0;
-        x.sign = 0;
-        x.nbytes = 1;
-    }
-    else
-    {
-        if (s[0] == '-')
-        {
-            x.sign = 1;
-            s.erase(s.begin());
-        }
-        int carry = 0;
-        string res = "";
-        int a = 0;
-        int cnt = 0;
-        int n = Getnumberofdigit(s);
-        allocation(x, s);
-        for (int i = 0; i < x.nbytes; i++)
-        {
-            for (int i = 0; i < n; i++)
-            {
-                a = carry * 10 + (s[i] - '0');
-                res += (a / 256) + '0';
-                carry = (a % 256);
-            }
-            x.data[i] = carry;
-            s = res;
-            res = "";
-            carry = 0;
-        }
-    }
-}
 
 string DecimalToBinary(BYTE n)
 {
@@ -946,6 +908,44 @@ int countspace(string t)
 }
 // ********** P R I M E _ T E S T ***************
 
+void DecimalToBigint(bigint& x, int s_int)
+{
+    string s = to_string(s_int);
+    if (s == "0")
+    {
+        x.data = new BYTE[1];
+        x.data[0] = 0;
+        x.sign = 0;
+        x.nbytes = 1;
+    }
+    else
+    {
+        if (s[0] == '-')
+        {
+            x.sign = 1;
+            s.erase(s.begin());
+        }
+        int carry = 0;
+        string res = "";
+        int a = 0;
+        int cnt = 0;
+        int n = Getnumberofdigit(s);
+        allocation(x, s);
+        for (int i = 0; i < x.nbytes; i++)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                a = carry * 10 + (s[i] - '0');
+                res += (a / 256) + '0';
+                carry = (a % 256);
+            }
+            x.data[i] = carry;
+            s = res;
+            res = "";
+            carry = 0;
+        }
+    }
+}
 /// <summary>
 /// Display BigInt 
 /// </summary>
