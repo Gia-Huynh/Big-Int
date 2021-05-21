@@ -1221,15 +1221,32 @@ int PrimeTest(Bigint n)
     int s = 0;
     Bigint zero = DecToBigint_2(0);
     Bigint pwm_result;
+<<<<<<< HEAD
     while (d % 2 == zero)
+=======
+    Bigint temp_d;
+    copy(zero, d % 2);
+    do
+>>>>>>> parent of 493d5e1 (PrimeV2)
     {
         cout << "\n2*d: " << BigintToDecimal(d);
         //D = 2^(x-1) * d
         copy(d, d / DecToBigint_2(2));
+<<<<<<< HEAD
         cout << "\nd: " << BigintToDecimal(d);
         copy(pwm_result, powermod(2, d, n) - n);
         if (pwm_result == DecToBigint_2 (-1)) return 1;
     };
+=======
+        DecimalToBigint(temp_d, BigintToDecimal(d));
+        copy(pwm_result, powermod(2, temp_d, n) - n);
+        cout << "\nd: " << BigintToDecimal(d);
+        cout << "\nN: " << BigintToDecimal(n);
+        cout << "\nResult: " << BigintToDecimal(pwm_result);
+        if ((pwm_result > DecToBigint_2 (-1)) == 0) return 1;
+        copy(zero, d % 2);
+    } while (zero == DecToBigint_2(0));
+>>>>>>> parent of 493d5e1 (PrimeV2)
     //D = 2^0 * d
     if (powermod(2, d, n) == DecToBigint_2(1)) return 1;
     return 0;
@@ -1281,7 +1298,11 @@ bool PrimeCheck(const bigint x)
     //Miller Rabin
     cout << "\nx: " << BigintToDecimal(x);
     if (PrimeTest(x) != 1) return 0;
+<<<<<<< HEAD
     printf("So nguyen to\n");
+=======
+    printf("\nSo nguyen to\n");
+>>>>>>> parent of 493d5e1 (PrimeV2)
 };
 
 bigint Abs(const bigint& x)
