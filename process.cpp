@@ -971,3 +971,472 @@ bigint Abs(const bigint& x)
     res.sign = -res.sign;
     return res;
 }
+
+// ********** P R I M E _ T E S T ***************
+
+void DecimalToBigint(bigint& x, int s_int)
+{
+    string s = to_string(s_int);
+    if (s == "0")
+    {
+        x.data = new BYTE[1];
+        x.data[0] = 0;
+        x.sign = 0;
+        x.nbytes = 1;
+    }
+    else
+    {
+        if (s[0] == '-')
+        {
+            x.sign = 1;
+            s.erase(s.begin());
+        }
+        int carry = 0;
+        string res = "";
+        int a = 0;
+        int cnt = 0;
+        int n = Getnumberofdigit(s);
+        allocation(x, s);
+        for (int i = 0; i < x.nbytes; i++)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                a = carry * 10 + (s[i] - '0');
+                res += (a / 256) + '0';
+                carry = (a % 256);
+            }
+            x.data[i] = carry;
+            s = res;
+            res = "";
+            carry = 0;
+        }
+    }
+}
+/// <summary>
+/// Display BigInt 
+/// </summary>
+/// <param name="x"></param>
+void DpBigInt(bigint x)
+{
+    int nx = x.nbytes;
+    for (int i = 0; i < nx; i++)
+    {
+        printf("%d", x.data[i] - '0');
+    };
+};
+bigint DecToBigint_2(int s_int)
+{
+    bigint x;
+    string s = to_string(s_int);
+    if (s == "0")
+    {
+        x.data = new BYTE[1];
+        x.data[0] = 0;
+        x.sign = 0;
+        x.nbytes = 1;
+    }
+    else
+    {
+        if (s[0] == '-')
+        {
+            x.sign = 1;
+            s.erase(s.begin());
+        }
+        int carry = 0;
+        string res = "";
+        int a = 0;
+        int cnt = 0;
+        int n = Getnumberofdigit(s);
+        allocation(x, s);
+        for (int i = 0; i < x.nbytes; i++)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                a = carry * 10 + (s[i] - '0');
+                res += (a / 256) + '0';
+                carry = (a % 256);
+            }
+            x.data[i] = carry;
+            s = res;
+            res = "";
+            carry = 0;
+        }
+    }
+    return x;
+}
+
+int operator== (const bigint x, const bigint y)
+{
+    int nx = x.nbytes;
+    int ny = y.nbytes;
+    if (nx != ny) return 0;
+    for (int i = 0; i < nx; i++)
+    {
+        if (x.data[i] != y.data[i]) return 0;
+    };
+    return 1;
+};
+
+int operator== (const bigint x, const int y_int)
+{
+    Bigint y = DecToBigint_2(y_int);
+    int nx = x.nbytes;
+    int ny = y.nbytes;
+    if (nx != ny) return 0;
+    for (int i = 0; i < nx; i++)
+    {
+        if (x.data[i] != y.data[i]) return 0;
+    };
+    return 1;
+};
+int operator>(bigint x, int y)
+{
+    bigint tmp_x;
+    bigint tmp_y;
+    tmp_x = x;
+    DecimalToBigint(tmp_y, y);
+    int nx = x.nbytes;
+    int ny = tmp_y.nbytes;
+    int n = (nx > ny) ? nx : ny;
+    while (n > nx)
+    {
+        copy(tmp_x, ShiftRight(tmp_x));
+        nx++;
+    }
+    while (n > ny)
+    {
+        copy(tmp_y, ShiftRight(tmp_y));
+        ny++;
+    }
+
+    for (int i = n - 1; i >= 0; i--)
+    {
+        if (tmp_x.data[i] > tmp_y.data[i])
+        {
+            freedata(tmp_x);
+            freedata(tmp_y);
+            return 1;
+        }
+        if (tmp_x.data[i] < tmp_y.data[i])
+        {
+            freedata(tmp_x);
+            freedata(tmp_y);
+            return -1;
+        }
+    }
+    freedata(tmp_x);
+    freedata(tmp_y);
+    return 0;
+}
+bigint operator%(const bigint& x, const int& y)
+{
+    bigint res;
+    bigint tmp;
+    bigint tmp_x;
+    bigint tmp_y;
+    tmp_x = x;
+    DecimalToBigint(tmp_y, y);
+    //tmp_y = y;
+    copy(tmp, tmp_x / tmp_y);
+    copy(tmp, tmp * tmp_y);
+    copy(tmp, tmp_x - tmp);
+    res = tmp;
+    freedata(tmp);
+    freedata(tmp_x);
+    freedata(tmp_y);
+    DecimalToBigint(res, BigintToDecimal(res));
+    return res;
+}
+
+bigint min(bigint x, bigint y)
+{
+    if (x > y) return y; else return x;
+};
+Bigint powermod(int base_int, Bigint exponent, Bigint modulus) {
+    Bigint base = DecToBigint_2(base_int);
+    if ((base > 1 == -1) || (exponent > 0 == -1) || modulus > 1 == -1)
+    {
+        Bigint nega_one; DecimalToBigint(nega_one, -1);
+        return nega_one;
+    }
+
+    Bigint result;
+    DecimalToBigint(result, 1);
+    Bigint exponent_mod = DecToBigint_2(0);
+    while (exponent > 0) {
+        copy(exponent_mod, exponent % 2);
+        //cout << "\nexponent_mod: " << BigintToDecimal(exponent_mod) << " " << exponent_mod.nbytes;
+        //cout << "\nDecBigInt: " << BigintToDecimal(DecToBigint_2(1)) << " " << DecToBigint_2(1).nbytes;
+        if (exponent_mod == DecToBigint_2(1)) {
+            //cout << "modulos";
+            copy(result, (result * base));
+            copy(result, (result % modulus));
+            copy(exponent, exponent - DecToBigint_2(1));
+        }
+        //base = (base * base) % modulus;
+
+
+        //cout << "\nbased:   " << BigintToDecimal(base);
+        copy(base, base * base);
+
+        copy(base, base % modulus); // ok 
+        cout << "\n Bytes: " << base.nbytes;
+        //cout << "\nbased:   " << BigintToDecimal(base); //ok
+        //cout << "\nexponent: " << BigintToDecimal(exponent); //ok
+        copy(exponent, exponent / DecToBigint_2(2));
+    }
+    return result;
+}
+/// <summary>
+/// Miller Rabin with base 2
+/// </summary>
+/// <param name="n"></param>
+/// <returns></returns>
+int PrimeTest(Bigint n)
+{
+    cout << "\nN: " << BigintToDecimal(n);
+    if ((n > DecToBigint_2(3) == -1) || (n % 2 == DecToBigint_2(0)))
+    {
+        printf("Assertion Fail, PrimeTest, N<3 or N chia het cho 2\n");
+        return 2;
+    };
+    Bigint d = n - DecToBigint_2(1);
+    cout << "\nOG D: " << BigintToDecimal(d);
+    //D = 2^x * d;
+    int s = 0;
+    Bigint zero = DecToBigint_2(0);
+    Bigint pwm_result;
+    Bigint temp_d;
+
+    copy(d, d / DecToBigint_2(2));
+    copy(zero, d % 2);
+    while (zero == DecToBigint_2(0))
+    {
+        //D = 2^(x-1) * d
+        DecimalToBigint(temp_d, BigintToDecimal(d));
+        copy(pwm_result, powermod(2, temp_d, n) - n);
+        cout << "\nd: " << BigintToDecimal(d);
+        cout << "\nN: " << BigintToDecimal(n);
+        cout << "\nResult: " << BigintToDecimal(pwm_result);
+        if ((pwm_result > DecToBigint_2(-1)) == 0) return 1;
+
+        copy(d, d / DecToBigint_2(2));
+        copy(zero, d % 2);
+    };
+    //D = 2^0 * d
+    cout << "\nResult LAST D: " << BigintToDecimal(powermod(2, d, n));
+    if (powermod(2, d, n) == DecToBigint_2(1)) return 1;
+    return 0;
+};
+
+int jacobi_cpp(Bigint& k, Bigint& n)
+// N VOI K BI SWAP BEN TRONG FUNCTION JACOBI
+{
+    cout << "\nN: " << BigintToDecimal(n) << " K: " << BigintToDecimal(k);
+    Bigint r;
+    Bigint temp;
+    copy(temp, k % 2);
+    if ((k > 0 != 1) || (((temp) > 1) != 0))
+        // neu k <= 0 hay k%2 = 0
+    {
+        printf("ERROR IN JACOBI CALCULATION, ASSERTION K FAILED"); return 2;
+    };
+    //n = n % k;
+    copy(n, n % k);
+    int t = 1;
+    //while (n != 0)
+    cout << "\nYes N: " << BigintToDecimal(n) << " K: " << BigintToDecimal(k);
+    while (n > 0 != 0)
+    {
+        cout << "\nLoop N: " << BigintToDecimal(n) << " K: " << BigintToDecimal(k);
+        copy(temp, n % 2);
+        //while (((n % 2) > 0) != 0)
+        while ((temp > 0) == 0)
+        {
+            cout << "\nN: " << BigintToDecimal(n) << " K: " << BigintToDecimal(k) << " Temp: " << BigintToDecimal(temp);
+            copy(n, n / DecToBigint_2(2));
+            //r = k % 8;
+            copy(r, k % 8);
+            if ((r == 3) or (r == 5))
+            {
+                t = -1 * t;
+            }
+            copy(temp, n % 2);
+        };
+        copy(temp, n + DecToBigint_2(0));
+        copy(n, k + DecToBigint_2(0));
+        copy(k, temp + DecToBigint_2(0));
+        //swap(n, k);
+        copy(r, n % 4);
+        copy(temp, k % 4);
+        //if ((n % 4 == 3) && (k % 4 == 3)) t = -1 * t;
+        if ((r == 3) && (temp == 3)) t = -1 * t;
+        //n = n % k;
+        copy(n, n % k);
+    };
+    freedata(temp);
+    freedata(r);
+    //cout << "\nN: " << BigintToDecimal(n) << " K: " << BigintToDecimal(k);
+    if (k == 1) return t;
+    else return 0;
+};
+
+bigint lucas(char mode, bigint& n, bigint& p, bigint& q)
+{
+    bigint n1;
+    bigint n2;
+    bigint n3;
+    if (mode == 'u')
+    {
+        DecimalToBigint(n1, 0);
+        DecimalToBigint(n2, 1);
+        DecimalToBigint(n3, BigintToDecimal(p));
+    }
+    else if (mode == 'v')
+    {
+        DecimalToBigint(n1, 2);
+        DecimalToBigint(n2, BigintToDecimal(p));
+        copy(n3, p * DecToBigint_2(1));
+        copy(n3, n3 * p);
+        cout << "\nInitialize Lucas sequence n3: " << BigintToDecimal(n3);
+        copy(n3, DecToBigint_2(1) - DecToBigint_2(-1));
+        cout << "\nInitialize Lucas sequence n3: " << BigintToDecimal(n3);
+        copy(n3, n3 - q);
+        cout << "\nInitialize Lucas sequence n3: " << BigintToDecimal(n3);
+    }
+    else
+    {
+        cout << "Lucas WTF ? U hay V?\n";
+        return DecToBigint_2(-1);
+    };
+    bigint m;
+    DecimalToBigint(m, 2);
+    bigint gay;
+    if (n == 0) return n1; else if (n == 1) return n2; else if (n == 2) return n3;
+    cout << "\np: " << BigintToDecimal(p) << "\nq: " << BigintToDecimal(q);
+    cout << "\nLucas sequence n1: " << BigintToDecimal(n1);
+    cout << "\nLucas sequence n2: " << BigintToDecimal(n2);
+    cout << "\nLucas sequence n3: " << BigintToDecimal(n3);
+    while (m > n == -1)
+    {
+        cout << "\nLucas sequence: " << BigintToDecimal(n3);
+        copy(n1, n2 * DecToBigint_2(1));
+        copy(n2, n3 * DecToBigint_2(1));
+        copy(gay, n1 * q);
+        copy(n3, n2 * p);
+        copy(n3, n3 - gay);
+        copy(m, m + DecToBigint_2(1));
+    };
+    return n3;
+};
+
+bool Lucas_test(bigint& x, bigint& D, bigint& p, bigint& q)
+{
+    Bigint d;
+    copy(d, x + DecToBigint_2(1));
+
+    cout << "\nLucas OG D: " << BigintToDecimal(d);
+    cout << "\n";
+    //D = 2^x * d;
+    int s = 0;
+    Bigint zero = DecToBigint_2(0);
+    Bigint pwm_result;
+    Bigint temp_d;
+
+    copy(d, d / DecToBigint_2(2));
+    copy(zero, d % 2);
+    while (zero == DecToBigint_2(0))
+    {
+        //D = 2^(x-1) * d
+        DecimalToBigint(temp_d, BigintToDecimal(d));
+        copy(pwm_result, lucas('v', D, p, q));
+        copy(pwm_result, pwm_result % x);
+
+        cout << "\nD: " << BigintToDecimal(d);
+        cout << "\nX: " << BigintToDecimal(x);
+        cout << "\nResult: " << BigintToDecimal(pwm_result);
+        if ((pwm_result > DecToBigint_2(0)) == 0) return 1;
+
+        copy(d, d / DecToBigint_2(2));
+        copy(zero, d % 2);
+        cout << "\nD divided: " << BigintToDecimal(d);
+    };
+    //D = 2^0 * d
+    copy(pwm_result, lucas('u', D, p, q));
+    copy(pwm_result, pwm_result % x);
+    if (pwm_result == DecToBigint_2(0)) return 1;
+    return 0;
+};
+bool PrimeCheck(const bigint x)
+{
+    bigint zero;
+    bigint modResult;
+    DecimalToBigint(zero, 0);
+    /*
+    //Early detection, i = 2 ---> 10000 to check for early prime
+    for (int i = 2; i < 10000; i++)
+    {
+        copy(modResult, x % i);
+        if (modResult == zero)
+        {
+            bigint temp;
+            DecimalToBigint(temp, i);
+            if (x == temp) { break; };
+            printf("\nKHONG PHAI PRIME, chia het cho %d", i);
+            return 0;
+        };
+    };
+    printf("\nRECHECK EARLY DETECTION!!!!\nMiller Rabin\n");
+    //Miller Rabin
+    cout << "\nx: " << BigintToDecimal(x);
+    if (PrimeTest(x) != 1) return 0;
+    */
+    //Jacobi symbol calculation
+    copy(modResult, DecToBigint_2(5));
+    int Jacobi;
+    int sign = 1;
+    Bigint k;
+    Bigint n;
+    Jacobi = 1;
+    printf("JACOBI\n");
+    while (true)
+    {
+        //cout << "\n1 / modResult: " << BigintToDecimal(modResult) << " x " << BigintToDecimal(x) << " n " << BigintToDecimal(n);
+        copy(k, modResult * DecToBigint_2(1));
+        //copy(n, x * DecToBigint_2(1));
+        DecimalToBigint(n, BigintToDecimal(x));
+        //cout << "\n2 / modResult: " << BigintToDecimal(modResult) << " x " << BigintToDecimal(x) << " n " << BigintToDecimal(n);
+        //cout << "\n";
+        // N VOI K BI SWAP BEN TRONG FUNCTION JACOBI
+        printf("JACOBI2\n");
+        Jacobi = jacobi_cpp(n, k);
+        //freedata(n);
+        cout << "\nJACOBII: " << BigintToDecimal(modResult) << " " << Jacobi << " n " << BigintToDecimal(n);
+        if (Jacobi == -1) { cout << "\nJACOBI: " << Jacobi << "   (k/x) = " << BigintToDecimal(modResult) << " / " << BigintToDecimal(x); break; };
+        copy(modResult, modResult + DecToBigint_2(2 * sign));
+        copy(modResult, modResult * DecToBigint_2(-1));
+        sign = sign * -1;
+    };
+    //modResult la D Set P = 1 and Q = (1 - D)/4
+    //Perform a strong Lucas probable prime test on n using parameters D, P, and Q.
+    bigint P;
+    bigint Q;
+    DecimalToBigint(P, 1);
+    copy(Q, DecToBigint_2(1) - modResult);
+    copy(Q, Q / DecToBigint_2(4));
+    DecimalToBigint(Q, BigintToDecimal(Q));
+
+    cout << "\n" << P.nbytes << " p " << P.sign;
+    cout << "\n" << Q.nbytes << " q " << Q.sign;
+    DecimalToBigint(n, BigintToDecimal(x));
+    if (Lucas_test(n, modResult, P, Q) == 1)
+    {
+        freedata(zero);
+        freedata(modResult);
+        printf("\nSo nguyen to (probably)\n");
+        return 1;
+    };
+    freedata(zero);
+    freedata(modResult);
+    return 0;
+};

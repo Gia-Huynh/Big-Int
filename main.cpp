@@ -17,10 +17,13 @@ int main()
 	DecimalToBigint(y, q); 
 	bigint z;
 	copy(z, x*y);
+	bigint z2;
+	copy(z2, y % x);
 	cout << "x: " << BigintToDecimal(x) << "\n";
 	cout << "y: " << BigintToDecimal(y) << "\n";
-	cout << "x * y = " << BigintToDecimal(z);
-	PrimeCheck(y);
+	cout << "\nx * y = " << BigintToDecimal(z);
+	cout << "\nx % y = " << BigintToDecimal(z2);
+	//PrimeCheck(y);
 	freedata(x);
 	freedata(y);
 	freedata(z);
