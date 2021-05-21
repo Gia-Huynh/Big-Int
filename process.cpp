@@ -800,7 +800,6 @@ bigint BigintDivision(const bigint& x, int num)
 
 <<<<<<< HEAD
 <<<<<<< HEAD
-<<<<<<< HEAD
 Bigint BigintModulo(const bigint &x,const bigint &y)
 {
     bigint res;
@@ -833,9 +832,6 @@ Bigint BigintModulo(const bigint &x,const bigint &y)
 }
 
 =======
->>>>>>> c15904499b1c966327e0cdeff700d17714ffc7c4
-=======
-bigint operator/(const bigint& x, const bigint& y)
 >>>>>>> c15904499b1c966327e0cdeff700d17714ffc7c4
 =======
 bigint operator/(const bigint& x, const bigint& y)
@@ -881,11 +877,7 @@ bigint operator%(const bigint& x, const bigint& y)
 {
 <<<<<<< HEAD
 <<<<<<< HEAD
-<<<<<<< HEAD
      bigint res;
-=======
-    bigint res;
->>>>>>> c15904499b1c966327e0cdeff700d17714ffc7c4
 =======
     bigint res;
 >>>>>>> c15904499b1c966327e0cdeff700d17714ffc7c4
@@ -927,7 +919,6 @@ bigint power(const bigint& x, const bigint& y) // x^y
     tmp_y = y;
 <<<<<<< HEAD
 <<<<<<< HEAD
-<<<<<<< HEAD
     if (tmp_x.sign == 0)
     {
         if (tmp_y.sign == 0)
@@ -961,8 +952,6 @@ bigint power(const bigint& x, const bigint& y) // x^y
 =======
 =======
 >>>>>>> c15904499b1c966327e0cdeff700d17714ffc7c4
-=======
->>>>>>> c15904499b1c966327e0cdeff700d17714ffc7c4
     res = x;
     copy(sum, ShiftRight(sum));
     copy(tmp, ShiftRight(tmp));
@@ -981,9 +970,6 @@ bigint power(const bigint& x, const bigint& y) // x^y
     freedata(sum);
     freedata(tmp);
 <<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> c15904499b1c966327e0cdeff700d17714ffc7c4
-=======
 >>>>>>> c15904499b1c966327e0cdeff700d17714ffc7c4
 =======
 >>>>>>> c15904499b1c966327e0cdeff700d17714ffc7c4
@@ -1273,17 +1259,10 @@ Bigint powermod(int base_int, Bigint exponent, Bigint modulus) {
         }
         //base = (base * base) % modulus;
 
-<<<<<<< HEAD
 
         //cout << "\nbased:   " << BigintToDecimal(base);
         copy(base, base * base);
 
-=======
-
-        //cout << "\nbased:   " << BigintToDecimal(base);
-        copy(base, base * base);
-
->>>>>>> c15904499b1c966327e0cdeff700d17714ffc7c4
         copy(base, base % modulus); // ok 
         cout << "\n Bytes: " << base.nbytes;
         //cout << "\nbased:   " << BigintToDecimal(base); //ok
@@ -1379,7 +1358,6 @@ int jacobi_cpp(Bigint& k, Bigint& n)
         //n = n % k;
         copy(n, n % k);
 <<<<<<< HEAD
-<<<<<<< HEAD
     };
     freedata(temp);
     freedata(r);
@@ -1439,9 +1417,6 @@ bigint lucas(char mode, bigint& n, bigint& p, bigint& q)
 
 =======
     };
-=======
-    };
->>>>>>> c15904499b1c966327e0cdeff700d17714ffc7c4
     freedata(temp);
     freedata(r);
     //cout << "\nN: " << BigintToDecimal(n) << " K: " << BigintToDecimal(k);
@@ -1498,9 +1473,6 @@ bigint lucas(char mode, bigint& n, bigint& p, bigint& q)
     return n3;
 };
 
-<<<<<<< HEAD
->>>>>>> c15904499b1c966327e0cdeff700d17714ffc7c4
-=======
 >>>>>>> c15904499b1c966327e0cdeff700d17714ffc7c4
 bool Lucas_test(bigint& x, bigint& D, bigint& p, bigint& q)
 {
