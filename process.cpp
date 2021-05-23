@@ -97,7 +97,7 @@ Bigint ShiftRight(Bigint x) {
 void copy(bigint& x, const bigint& y)
 {
     if (x.data != NULL)
-       delete[]x.data;
+           delete[]x.data;
     x.nbytes = y.nbytes;
     x.data = y.data;
     x.sign = y.sign;
@@ -737,12 +737,13 @@ bigint operator*(bigint x,bigint y)
             else
                 tmp.data[j] = 0;
         }
-        res = res + tmp;
+        //res = res + tmp;
+        copy(res, res + tmp);
     }
     if (x.sign != y.sign)
         res.sign = 1;
     freedata(tmp); 
-    DecimalToBigint(res, BigintToDecimal(res));
+   // DecimalToBigint(res, BigintToDecimal(res));
     return res;
 }
 
@@ -812,7 +813,8 @@ bigint operator/(const bigint& x, const bigint& y)
     return carry;
 }
 
-bigint operator%(const bigint &x,const bigint &y)
+
+/*bigint operator%(const bigint &x,const bigint &y)
 {
     bigint res;
     bigint tmp;
@@ -831,8 +833,86 @@ bigint operator%(const bigint &x,const bigint &y)
     freedata(tmp_y);
     DecimalToBigint(res, BigintToDecimal(res));
     return res;
+}*/
+bigint BigintModulo(const bigint& x, const bigint& y)
+{
+    bigint res;
+    bigint tmp_x;
+    bigint tmp_y;
+    if ((x > y) != -1)
+    {
+        tmp_x = x;
+        tmp_y = y;
+        do
+        {
+            copy(tmp_x, tmp_x - tmp_y);
+            copy(tmp_y, BigintMultiplication(tmp_y, 2));
+        } while ((tmp_x > tmp_y) != -1);
+        do
+        {
+            copy(tmp_y, BigintDivision(tmp_y, 2));
+            if ((tmp_x > tmp_y) != -1)
+            {
+                copy(tmp_x, tmp_x - tmp_y);
+            }
+        } while ((tmp_x > y) != -1);
+    }
+    else
+        tmp_x = x;
+    res = tmp_x;
+    freedata(tmp_x);
+    freedata(tmp_y);
+    return res;
 }
 
+bigint operator%(const bigint& x, const bigint& y)
+{
+    bigint res;
+    if (x.sign == y.sign)
+    {
+        if ((x > y) == 0)
+        {
+            copy(res, ShiftRight(res));
+            return res;
+        }
+    }
+    bigint tmp_x;
+    bigint tmp_y;
+    tmp_x = x;
+    tmp_y = y;
+    if (tmp_x.sign == 0)
+    {
+        if (tmp_y.sign == 0)
+        {
+            copy(res, BigintModulo(tmp_x, tmp_y));
+        }
+        else
+        {
+            tmp_y.sign = 0;
+            copy(res, BigintModulo(tmp_x, tmp_y));
+            copy(res, res - tmp_y);
+        }
+    }
+    else
+    {
+        if (tmp_y.sign == 0)
+        {
+            tmp_x.sign = 0;
+            copy(res, BigintModulo(tmp_x, tmp_y));
+            copy(res, tmp_y - res);
+        }
+        else
+        {
+            tmp_x.sign = 0;
+            tmp_y.sign = 0;
+            copy(res, BigintModulo(tmp_x, tmp_y));
+            res.sign = 1;
+        }
+    }
+    freedata(tmp_x);
+    freedata(tmp_y);
+    return res;
+}
 bigint operator~(const bigint& x)
 {
     bigint res;
@@ -905,6 +985,12 @@ int countspace(string t)
 }
 // ********** P R I M E _ T E S T ***************
 
+void copy_2(bigint& x, bigint& y)
+{
+    x.nbytes = y.nbytes;
+    x.data = y.data;
+    x.sign = y.sign;
+}
 void DecimalToBigint(bigint& x, int s_int)
 {
     string s = to_string(s_int);
@@ -1083,8 +1169,17 @@ bigint min (bigint x, bigint y)
 {
     if (x > y) return y; else return x;
 };
-Bigint powermod(int base_int, Bigint exponent, Bigint modulus) {
-    Bigint base = DecToBigint_2(base_int);
+Bigint powermod(int base_int, Bigint exponent_gay, Bigint modulus) {
+    Bigint one; DecimalToBigint(one, 1);
+    Bigint two; DecimalToBigint(two, 2);
+    bigint exponent;
+    copy(exponent, exponent_gay * one);
+    cout << "\nPower mod: " << base_int << "^" << BigintToDecimal(exponent) << " mod " << BigintToDecimal(modulus);
+    //cout << "\nbase_int:   " << base_int;
+    //cout << "\nmodulus:   " << BigintToDecimal(modulus); //ok
+    //cout << "\nexponent: " << BigintToDecimal(exponent); //ok
+    Bigint base;
+    DecimalToBigint(base, base_int);
     if ((base > 1 == -1) || (exponent > 0 == -1) || modulus > 1 == -1)
     {
         Bigint nega_one; DecimalToBigint(nega_one, -1);
@@ -1093,29 +1188,35 @@ Bigint powermod(int base_int, Bigint exponent, Bigint modulus) {
 
     Bigint result; 
     DecimalToBigint(result, 1);
-    Bigint exponent_mod = DecToBigint_2(0);
+    Bigint exponent_mod;
+
+    DecimalToBigint(exponent_mod, 0);
+
     while (exponent > 0) {
         copy(exponent_mod, exponent % 2);
         //cout << "\nexponent_mod: " << BigintToDecimal(exponent_mod) << " " << exponent_mod.nbytes;
         //cout << "\nDecBigInt: " << BigintToDecimal(DecToBigint_2(1)) << " " << DecToBigint_2(1).nbytes;
-        if (exponent_mod == DecToBigint_2(1)) {
+        if (exponent_mod > one == 0) {
             //cout << "modulos";
             copy(result, (result * base));
-            copy(result, (result % modulus));
-            copy(exponent, exponent - DecToBigint_2(1));
+            if (result > modulus == 1) copy(result, (result % modulus));
+            copy(exponent, exponent - one);
         }
         //base = (base * base) % modulus;
 
 
         //cout << "\nbased:   " << BigintToDecimal(base);
-        copy(base, base * base); 
+        copy(base, base * base);
 
-        copy(base, base % modulus); // ok 
-        cout << "\n Bytes: " << base.nbytes;
-        //cout << "\nbased:   " << BigintToDecimal(base); //ok
+        if (base > modulus == 1) copy(base, base % modulus); // ok 
+        //cout << "\n Bytes: " << base.nbytes;
+        //cout << "\nbased:   " << BigintToDecimal(base);
+        //cout << "\nresult:   " << BigintToDecimal(result); //ok
         //cout << "\nexponent: " << BigintToDecimal(exponent); //ok
-        copy (exponent, exponent / DecToBigint_2(2));
-    }
+        copy(exponent, exponent / two);
+    };
+    freedata(one);
+    freedata(two);
     return result;
 }
 /// <summary>
@@ -1135,28 +1236,36 @@ int PrimeTest(Bigint n)
     cout << "\nOG D: " << BigintToDecimal(d);
     //D = 2^x * d;
     int s = 0;
-    Bigint zero = DecToBigint_2(0);
+    Bigint zero; DecimalToBigint(zero, 0);
+    Bigint negaOne; DecimalToBigint(negaOne, -1);
+    Bigint one; DecimalToBigint(one, 1);
+    Bigint two; DecimalToBigint(two, 2);
     Bigint pwm_result;
     Bigint temp_d;
+    Bigint dModHai;
 
-    copy(d, d / DecToBigint_2(2));
-    copy(zero, d % 2);
-    while (zero == DecToBigint_2(0))
+    copy(dModHai, d % 2);
+    copy(d, d / two);
+    while (dModHai > zero == 0)
     {
         //D = 2^(x-1) * d
         DecimalToBigint(temp_d, BigintToDecimal(d));
-        copy(pwm_result, powermod(2, temp_d, n) - n);
-        cout << "\nd: " << BigintToDecimal(d);
-        cout << "\nN: " << BigintToDecimal(n);
-        cout << "\nResult: " << BigintToDecimal(pwm_result);
-        if ((pwm_result > DecToBigint_2 (-1)) == 0) return 1;
+        copy(pwm_result, powermod(2, temp_d, n));
+        copy(pwm_result, pwm_result - n);
+        //cout << "\nd: " << BigintToDecimal(d);
+        //cout << "\nN: " << BigintToDecimal(n);
+        //cout << "\nResult: " << BigintToDecimal(pwm_result);
+        if ((pwm_result > negaOne) == 0) return 1;
 
-        copy(d, d / DecToBigint_2(2));
-        copy(zero, d % 2);
+        copy(dModHai, d % 2);
+        if (dModHai > zero != 0) break;
+        copy(d, d / two);
+        copy(dModHai, d % 2);
     };
     //D = 2^0 * d
     cout << "\nResult LAST D: " << BigintToDecimal(powermod(2, d, n));
-    if (powermod(2, d, n) == DecToBigint_2(1)) return 1;
+    cout << "MILLER RABIN DONE?";
+    if (powermod(2, d, n) > one == 0) return 1;
     return 0;
 };
 
@@ -1211,7 +1320,7 @@ int jacobi_cpp(Bigint &k, Bigint &n)
     else return 0;
 };
 
-bigint lucas_mod(char mode, bigint &n, bigint &p, bigint &q, bigint &x)
+bigint lucas_mod(char mode, bigint &n, bigint &p, bigint &q, bigint x)
 {
     cout << "\nLucas p: " << BigintToDecimal(p) << "\nq: " << BigintToDecimal(q) << "\nn: " << BigintToDecimal(n);
     bigint n1;
@@ -1246,6 +1355,7 @@ bigint lucas_mod(char mode, bigint &n, bigint &p, bigint &q, bigint &x)
     bigint gay;
     bigint one;
     DecimalToBigint(one, 1);
+    bigint zero; DecimalToBigint(zero, 0);
     if (n == 0) return n1; else if (n == 1) return n2; else if (n == 2) return n3;
     cout << "\np: " << BigintToDecimal(p) << "\nq: " << BigintToDecimal(q);
     cout << "\nLucas sequence n1: " << BigintToDecimal(n1);
@@ -1253,21 +1363,25 @@ bigint lucas_mod(char mode, bigint &n, bigint &p, bigint &q, bigint &x)
     cout << "\nLucas sequence n3: " << BigintToDecimal(n3);
     while (m > n == -1)
     {
-        //cout << "\nm: " << BigintToDecimal(m) << "n: " << BigintToDecimal(n);
-        //cout << "\n Lucas N3: " << BigintToDecimal(n3);
+        cout << "\nm: " << BigintToDecimal(m) << "n: " << BigintToDecimal(n);
+        cout << "\n Lucas N3: " << BigintToDecimal(n3);
+        if (n3 > zero == 0) { cout << "\nLUCAS FOUND ZERO AT " << BigintToDecimal(m) << "\n"; };
         copy(n1, n2 * one);
         copy(n2, n3 * one);
         copy(gay, n1 * q);
-        copy(gay, gay % x);
+        //copy(gay, gay % x);
         //cout << "\nQ * (N-2): " << BigintToDecimal(gay);
         copy(n3, n2 * p);
-        copy(n3, n3 % x);
-        //cout << "\nP * (N-1): " << BigintToDecimal(n3);
+        //copy(n3, n3 % x);
+        //cout << "\nP * (N-1):  " << BigintToDecimal(n3);
         copy(n3, n3 - gay);
         //cout << "\n Lucas N3: " << BigintToDecimal(n3);
         copy(n3, n3 % x);
         copy(m, m + one);
+        //if (m > DecToBigint_2(35000) == 0) { cout << "\n PAUSE FOR DEBUGGING \n"; while (true) {}; };
     };
+    cout << "\n Lucas N1: " << BigintToDecimal(n1);
+    cout << "\n Lucas N2: " << BigintToDecimal(n2);
     cout << "\n Lucas N3: " << BigintToDecimal(n3);
     cout << "\nLucas done\n";
     return n3;
@@ -1322,7 +1436,7 @@ bool PrimeCheck(const bigint x)
     bigint zero;
     bigint modResult;
     DecimalToBigint(zero, 0);
-    /*
+    
     //Early detection, i = 2 ---> 10000 to check for early prime
     for (int i = 2; i < 10000; i++)
     {
@@ -1336,11 +1450,10 @@ bool PrimeCheck(const bigint x)
             return 0;
         };
     };
-    printf("\nRECHECK EARLY DETECTION!!!!\nMiller Rabin\n");
     //Miller Rabin
-    cout << "\nx: " << BigintToDecimal(x);
+    cout << "\nBEGIN MILLER RABIN\nx: " << BigintToDecimal(x);
     if (PrimeTest(x) != 1) return 0;
-    */
+    printf("\nMiller Rabin done\n");
     //Jacobi symbol calculation
     copy(modResult, DecToBigint_2(5));
     int Jacobi;
@@ -1361,6 +1474,7 @@ bool PrimeCheck(const bigint x)
         //freedata(n);
         //cout << "\nJACOBII: " << BigintToDecimal(modResult) << " " << Jacobi << " n " << BigintToDecimal(n);
         if (Jacobi == -1) { cout << "\nJACOBI: "  << Jacobi << "   (k/x) = " << BigintToDecimal(modResult) << " / " << BigintToDecimal(x); break; };
+        if (Jacobi == 2) return 0;
         copy(modResult, modResult + DecToBigint_2(2 * sign));
         copy(modResult, modResult * DecToBigint_2(-1));
         sign = sign * -1;
