@@ -1232,14 +1232,15 @@ int PrimeTest(Bigint n)
         printf("Assertion Fail, PrimeTest, N<3 or N chia het cho 2\n");
         return 2;
     };
-    Bigint d = n - DecToBigint_2(1);
-    cout << "\nOG D: " << BigintToDecimal(d);
-    //D = 2^x * d;
-    int s = 0;
     Bigint zero; DecimalToBigint(zero, 0);
     Bigint negaOne; DecimalToBigint(negaOne, -1);
     Bigint one; DecimalToBigint(one, 1);
     Bigint two; DecimalToBigint(two, 2);
+    Bigint d;
+    copy (d, n - one);
+    cout << "\nOG D: " << BigintToDecimal(d);
+    //D = 2^x * d;
+    int s = 0;
     Bigint pwm_result;
     Bigint temp_d;
     Bigint dModHai;
@@ -1319,7 +1320,7 @@ int jacobi_cpp(Bigint &k, Bigint &n)
     if (k == 1) return t;
     else return 0;
 };
-
+/*
 bigint lucas_mod(char mode, bigint &n, bigint &p, bigint &q, bigint x)
 {
     cout << "\nLucas p: " << BigintToDecimal(p) << "\nq: " << BigintToDecimal(q) << "\nn: " << BigintToDecimal(n);
@@ -1385,8 +1386,81 @@ bigint lucas_mod(char mode, bigint &n, bigint &p, bigint &q, bigint x)
     cout << "\n Lucas N3: " << BigintToDecimal(n3);
     cout << "\nLucas done\n";
     return n3;
-};
+};*/
+bigint lucas_mod(char mode, bigint& n, bigint& p, bigint& q, bigint x)
+{
+    //cout << "\nLucas p: " << BigintToDecimal(p) << "\nq: " << BigintToDecimal(q) << "\nx: " << BigintToDecimal(x);
+    if (p > x == 1) copy(p, p % x);
+    if (q > x == 1) copy(q, q % x);
+    //cout << "\nLucas p: " << BigintToDecimal(p) << "\nq: " << BigintToDecimal(q) << "\nx: " << BigintToDecimal(x);
 
+    bigint * lucas;
+    lucas = new bigint[3];
+    if (mode == 'u')
+    {
+        cout << "\nLucas mode U";
+        DecimalToBigint(*lucas, 0);
+        DecimalToBigint(*(lucas + 1), 1);
+        DecimalToBigint(*(lucas + 2), BigintToDecimal(p));
+        //cout << "\nInitialize Lucas sequence n3: " << BigintToDecimal(n3);
+    }
+    else if (mode == 'v')
+    {
+        cout << "\nLucas mode V";
+        DecimalToBigint(*lucas, 2);
+        DecimalToBigint(*(lucas + 1), BigintToDecimal(p));
+        copy(*(lucas + 2), p * DecToBigint_2(1));
+        copy(*(lucas + 2), *(lucas + 2) * p);
+        copy(*(lucas + 2), *(lucas + 2) - q);
+        copy(*(lucas + 2), *(lucas + 2) - q);
+        //cout << "\nInitialize Lucas sequence n3: " << BigintToDecimal(n3);
+    }
+    else
+    {
+        cout << "Lucas WTF ? U hay V?\n";
+        return DecToBigint_2(-1);
+    };
+    bigint m;
+    DecimalToBigint(m, 2);
+    bigint gay;
+    bigint one;
+    DecimalToBigint(one, 1);
+    bigint zero; DecimalToBigint(zero, 0);
+    if (n == 0) return *(lucas); else if (n == 1) return *(lucas + 1); else if (n == 2) return *(lucas + 2);
+    int mTemp = 0;
+    cout << "\np: " << BigintToDecimal(p) << "\nq: " << BigintToDecimal(q);
+    //cout << "\nLucas sequence n1: " << BigintToDecimal(*(lucas));
+    //cout << "\nLucas sequence n2: " << BigintToDecimal(*(lucas + 1));
+    //cout << "\nLucas sequence n3: " << BigintToDecimal(*(lucas + 2));
+    while (m > n == -1)
+    {
+        //cout << "\nm: " << BigintToDecimal(m) << "n: " << BigintToDecimal(n);
+
+        //copy(*(lucas), *(lucas + 1) * one);
+        //copy(*(lucas + 1), *(lucas + 2) * one);
+        
+        copy(gay, *(lucas + (mTemp + 1) % 3) * q);
+        copy(*(lucas + mTemp), *(lucas + (mTemp + 2) % 3) * p);
+        copy(*(lucas + mTemp), *(lucas + mTemp) - gay);
+        copy(*(lucas + mTemp), *(lucas + mTemp) % x);
+
+        //cout << "\n Lucas N3: " << BigintToDecimal(*(lucas + mTemp));
+        if (*(lucas + mTemp) > zero == 0) { cout << "\nLUCAS FOUND ZERO AT " << BigintToDecimal(m) << "\n"; };
+
+        mTemp = (mTemp + 1) % 3;
+        copy(m, m + one);
+    };
+    cout << "\n Lucas N1: " << BigintToDecimal(*(lucas));
+    cout << "\n Lucas N2: " << BigintToDecimal(*(lucas + 1));
+    cout << "\n Lucas N3: " << BigintToDecimal(*(lucas + 2));
+    cout << "\nLucas done\n";
+    copy(zero, *(lucas + (mTemp + 2) % 3) * one);
+    freedata(*(lucas));
+    freedata(*(lucas + 1));
+    freedata(*(lucas + 2));
+    delete[](lucas);
+    return zero;
+};
 bool Lucas_test(bigint &x, bigint &D, bigint &p, bigint &q)
 {
     cout << "\nLucas OG X: " << BigintToDecimal(x);
