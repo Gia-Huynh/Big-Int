@@ -9,7 +9,6 @@
 #pragma once
 typedef unsigned char BYTE;
 using namespace std;
-
 typedef struct Bigint
 {
     BYTE sign = 0; // 1 is negative ,0 is positive
@@ -75,7 +74,7 @@ int BinaryToInt(string s);
 
 void BinaryToBigint(bigint& x, string s);
 
-int operator>(bigint x,bigint y);
+int operator>(bigint x, bigint y);
 
 bigint BigintAddition(bigint x, bigint y);
 
@@ -85,26 +84,58 @@ bigint BigintMultiplication(bigint x, int num);
 
 bigint BigintMod(const bigint& x, int num);
 
-bigint operator+(bigint x, bigint y);
+Bigint BigintModulo(const bigint& x, const bigint& y);
 
-bigint operator-(bigint x, bigint y);
+bigint operator+(const bigint& x, const bigint& y);
 
-bigint operator*(bigint x, bigint y);
+bigint operator-(const bigint& x, const bigint& y);
+
+bigint operator*(const bigint& x, const bigint& y);
 
 bigint operator/(const bigint& x, const bigint& y);
 
-bigint operator%(const bigint &x,const bigint &y);
+bigint operator%(const bigint& x, const bigint& y);
+
+bigint power(const bigint& x, const bigint& y);
 
 bigint operator~(const bigint& x);
+
+bigint operator&(const bigint& x, const bigint& y);
+
+bigint operator|(const bigint& x, const bigint& y);
+
+bigint operator^(const bigint& x, const bigint& y);
 
 bigint square(const bigint& x);
 
 bool BigintIsNonZero(bigint x);
 
-string BigintToDecimal(const bigint &x);
+string BigintToDecimal(const bigint& x);
+
+bigint BigintDivision(const bigint& x, int num);
+
+int countspace(string t);
+
+bigint Abs(const bigint& x);
+
+bigint operator<<(const bigint& x, int cnt);
+
+bigint operator>>(const bigint& x, int cnt);
+
+bigint min(const bigint& x, const bigint& y);
+
+bigint max(const bigint& x, const bigint& y);
+
+int digits(const bigint& x);
+
+bool isEven(const bigint& x);
+
 
 int countspace(string t);
 bool PrimeCheck(const bigint x);
 bigint BigintDivision(const bigint& x, int num);
 
 bigint DecToBigint_2(int s_int);
+void DecimalToBigint(bigint& x, int s_int);
+//bigint lucas_mod_old(char mode, bigint& n, bigint& p, bigint& q, bigint x);
+bigint lucas_mod(char mode, bigint& n, bigint& p, bigint& q, bigint D, bigint x);
